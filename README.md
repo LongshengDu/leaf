@@ -4,7 +4,7 @@
 
 # Highlights
 
-- Based on C++11 and [​Intel® Threading Building Blocks](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onetbb.html)
+- Based on C++11 and [​Intel® Threading Building Blocks](https://github.com/oneapi-src/oneTBB)
 - Header-only
 
 # Documentations
@@ -17,7 +17,18 @@
 
 # Examples
 
+```bash
+# Dependencies
+sudo apt-get install -y libtbb-dev # ​Intel Threading Building Blocks
+```
+
 - [Example for leaf Any](example/any/main.cpp)
 - Example for leaf Map (TODO)
 - Example for leaf Buffer (TODO)
 - Example for leaf Pipeline (TODO)
+
+# License
+
+[MIT License](LICENSE)
+
+Copyright (c) 2020-present, Longsheng Du
