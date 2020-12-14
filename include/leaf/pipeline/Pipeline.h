@@ -53,7 +53,7 @@ public:
         // Wait for process graph finish existing pipeline works
         wait_finish();
         // Terminate all process nodes
-        reset();
+        reset_pipeline();
         // Terminate all io nodes
         _graph_input_node.reset();
         _datafrm_eol_node.reset();
@@ -85,13 +85,13 @@ public:
 
 protected:
     // Get graph input node name
-    std::string graph_input_node()
+    std::string GraphInputNode()
     {
         return _graph_input_name;
     }
 
     // Get graph end node name
-    std::string dataframe_eol_node()
+    std::string DataframeEOLNode()
     {
         return _datafrm_eol_name;
     }
@@ -131,7 +131,7 @@ protected:
     }
 
     // Initialize nodes in process garph
-    bool construct()
+    bool construct_pipeline()
     {
         // Pipeline must connect head to tail, _connection_list.size() must greater than 2
         if (check_connection() == false)
@@ -180,11 +180,12 @@ protected:
     }
 
     // Reset process pipeline
-    void reset()
+    void reset_pipeline()
     {
         _node_map.clear();
         _module_map.clear();
         _connection_map.clear();
+        _concurrency_map.clear();
         _connection_list.clear();
     }
 
@@ -277,7 +278,7 @@ private:
     // Map of node modules
     tbb::concurrent_unordered_map<std::string, std::shared_ptr<node_module>> _module_map;
     // Map of process nodes
-    tbb::concurrent_unordered_map<std::string, std::unique_ptr<process_node>> _node_map;
+    tbb::concurrent_unordered_map<std::string, std::shared_ptr<process_node>> _node_map;
     // Map of process nodes concurrency
     tbb::concurrent_unordered_map<std::string, size_t> _concurrency_map;
 
@@ -287,13 +288,13 @@ private:
     std::vector<std::string> _connection_list;
 
     // Input node of process graph
-    std::unique_ptr<tbb::flow::broadcast_node<typename _FrameT::ptr>> _graph_input_node;
+    std::shared_ptr<tbb::flow::broadcast_node<typename _FrameT::ptr>> _graph_input_node;
     // End node of process graph
-    std::unique_ptr<tbb::flow::function_node<typename _FrameT::ptr, tbb::flow::continue_msg>> _datafrm_eol_node;
+    std::shared_ptr<tbb::flow::function_node<typename _FrameT::ptr, tbb::flow::continue_msg>> _datafrm_eol_node;
 
     // IO nodes name
     const char *_graph_input_name = "[Graph_Input]";
-    const char *_datafrm_eol_name = "[DataFrame_EOL]";
+    const char *_datafrm_eol_name = "[Dataframe_EOL]";
 };
 
 } // namespace leaf

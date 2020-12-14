@@ -37,6 +37,19 @@ class Daemon
 public:
     virtual ~Daemon() = default;
 
+    template <class _DmnT>
+    static _DmnT &Call(int32_t key)
+    {
+        return dynamic_cast<_DmnT &>(*Register()[key]);
+    }
+
+    template <class _DmnT>
+    static void Initialize(int32_t key, _DmnT *obj)
+    {
+        Indexer().push_back(key);
+        Register()[key].reset(obj);
+    }
+
 protected:
     virtual void start() = 0;
     virtual void stop() = 0;
@@ -54,19 +67,6 @@ private:
     {
         static tbb::concurrent_unordered_map<int32_t, std::unique_ptr<Daemon>> reg;
         return reg;
-    }
-
-    template <class _DmnT>
-    static _DmnT &Call(int32_t key)
-    {
-        return dynamic_cast<_DmnT &>(*(Register()[key]));
-    }
-
-    template <class _DmnT>
-    static void Initialize(int32_t key, _DmnT *obj)
-    {
-        Indexer().push_back(key);
-        Register()[key].reset(obj);
     }
 
     static void Terminate()

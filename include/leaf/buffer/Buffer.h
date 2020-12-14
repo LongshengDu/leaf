@@ -54,7 +54,7 @@ public:
 
     virtual bool pull_source() = 0;
 
-    virtual bool active() = 0;
+    virtual bool source_active() = 0;
 
 protected:
     bool try_push(typename _FrameT::ptr &frame)

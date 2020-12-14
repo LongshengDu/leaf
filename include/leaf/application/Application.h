@@ -37,32 +37,6 @@ class Application
 public:
     virtual ~Application() = default;
 
-    // Interact with Utility
-    template <class _UtlT>
-    static void InitializeUtility(int32_t key, _UtlT *obj)
-    {
-        Utility::Initialize(key, obj);
-    }
-
-    template <class _UtlT>
-    static _UtlT &CallUtility(int32_t key)
-    {
-        return Utility::Call(key);
-    }
-
-    // Interact with Daemon
-    template <class _DmnT>
-    static void InitializeDaemon(int32_t key, _DmnT *obj)
-    {
-        Daemon::Initialize<_DmnT>(key, obj);
-    }
-
-    template <class _DmnT>
-    static _DmnT &CallDaemon(int32_t key)
-    {
-        return Daemon::Call(key);
-    }
-
     // Interact with Application
     template <class _AppT>
     static void Run()

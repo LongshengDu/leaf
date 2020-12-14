@@ -36,6 +36,18 @@ class Utility
 public:
     virtual ~Utility() = default;
 
+    template <class _UtlT>
+    static _UtlT &Call(int32_t key)
+    {
+        return dynamic_cast<_UtlT &>(*Register()[key]);
+    }
+
+    template <class _UtlT>
+    static void Initialize(int32_t key, _UtlT *obj)
+    {
+        Register()[key].reset(obj);
+    }
+
 private:
     friend class Application;
 
@@ -43,18 +55,6 @@ private:
     {
         static tbb::concurrent_unordered_map<int32_t, std::unique_ptr<Utility>> reg;
         return reg;
-    }
-
-    template <class _UtlT>
-    static _UtlT &Call(int32_t key)
-    {
-        return dynamic_cast<_UtlT &>(*(Register()[key]));
-    }
-
-    template <class _UtlT>
-    static void Initialize(int32_t key, _UtlT *obj)
-    {
-        Register()[key].reset(obj);
     }
 
     static void Terminate()

@@ -36,58 +36,90 @@ public:
     // Constructor
     Any() = default;
 
-    // Template Constructor
+    // Template constructor
     template <typename _TypeT>
     Any(const _TypeT &val)
     {
-        Cast<_TypeT>(*this) = val;
+        reset<_TypeT>(val);
     }
 
-    // Reset content
-    void reset()
+    // Content empty
+    bool empty()
+    {
+        return !_content;
+    }
+
+    // Clear content
+    void clear()
     {
         _content.reset();
     }
 
-    // Initialize Status
-    bool empty()
+    // Template reset content
+    template <typename _TypeT>
+    void reset()
     {
-        return (_content == nullptr);
+        _content.reset(new AnyType<_TypeT>);
     }
 
-    // Template Operator =
+    // Template reset content with value
+    template <typename _TypeT>
+    void reset(const _TypeT &val)
+    {
+        _content.reset(new AnyType<_TypeT>(val));
+    }
+
+    // Template operator =
     template <typename _TypeT>
     Any &operator=(const _TypeT &val)
     {
-        Cast<_TypeT>(*this) = val;
+        reset<_TypeT>(val);
         return *this;
     }
 
-    // Template Operator _TypeT Casting
+    // Template operator cast to _TypeT
     template <typename _TypeT>
     operator _TypeT &()
     {
         return Cast<_TypeT>(*this);
     }
 
-    // Template Get _TypeT Value
+    // Template cast to _TypeT
+    template <typename _TypeT>
+    static _TypeT &Cast(Any &any)
+    {
+        auto ptr = std::dynamic_pointer_cast<AnyType<_TypeT>>(any._content);
+
+        if (!ptr)
+        {
+            any.reset<_TypeT>();
+        }
+
+        return ptr -> data;
+    }
+
+    // Template cast to _TypeT const
     template <typename _TypeT>
     static _TypeT &Cast(const Any &any)
     {
-        if (any._content == nullptr)
-            any._content.reset(new AnyType<_TypeT>);
+        auto ptr = std::dynamic_pointer_cast<AnyType<_TypeT>>(any._content);
 
-        return dynamic_cast<AnyType<_TypeT> &>(*any._content).data;
+        if (!ptr)
+        {
+            throw std::bad_cast();
+        }
+
+        return ptr -> data;
     }
 
 private:
-    // Base for Pointer
+    // Base for pointer
     struct AnyTypeBase
     {
         virtual ~AnyTypeBase() = default;
     };
 
-    // Store Actual Data
+    // Store actual data
     template <typename _TypeT>
     struct AnyType : public AnyTypeBase
     {
@@ -96,8 +128,8 @@ private:
         explicit AnyType(const _TypeT &d) : data(d) {}
     };
 
-    // Pointer to Base
-    mutable std::shared_ptr<AnyTypeBase> _content;
+    // Pointer to base
+    std::shared_ptr<AnyTypeBase> _content;
 };
 
 } // namespace leaf
